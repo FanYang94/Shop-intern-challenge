@@ -1,0 +1,118 @@
+{\rtf1\ansi\ansicpg936\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 ############ Question 1 #################\
+\
+# import data\
+Shopdata <- read.csv("~/Desktop/2019 Winter Data Science Intern Challenge Data Set - Sheet1.csv")\
+\
+Shopdata$created_at=as.Date(Shopdata$created_at)\
+\
+summary(Shopdata)\
+# order_id       shop_id          user_id       order_amount     total_items       payment_method    \
+# Min.   :   1   Min.   :  1.00   Min.   :607.0   Min.   :    90   Min.   :   1.000   Length:5000       \
+# 1st Qu.:1251   1st Qu.: 24.00   1st Qu.:775.0   1st Qu.:   163   1st Qu.:   1.000   Class :character  \
+# Median :2500   Median : 50.00   Median :849.0   Median :   284   Median :   2.000   Mode  :character  \
+# Mean   :2500   Mean   : 50.08   Mean   :849.1   Mean   :  3145   Mean   :   8.787                     \
+# 3rd Qu.:3750   3rd Qu.: 75.00   3rd Qu.:925.0   3rd Qu.:   390   3rd Qu.:   3.000                     \
+# Max.   :5000   Max.   :100.00   Max.   :999.0   Max.   :704000   Max.   :2000.000                     \
+# created_at        \
+# Min.   :2017-03-01  \
+# 1st Qu.:2017-03-08  \
+# Median :2017-03-16  \
+# Mean   :2017-03-15  \
+# 3rd Qu.:2017-03-23  \
+# Max.   :2017-03-30  \
+\
+##### 3145 is the mean of order_amount, the calculation of AOV is wrong\
+##### The AOV = revenue/(number of orders)\
+##### In this data set, the metrics are the sums of 'order_amount' / the sums of 'total_items'\
+##### So the AOV is:\
+AOV=sum(Shopdata$order_amount)/sum(Shopdata$total_items)\
+AOV\
+# [1] 357.9215\
+\
+\
+##### Another thing in the summary data is the max value of order_amount is very large (704000)\
+##### It could be an outlier and affects the AOV results\
+\
+Shopdata[Shopdata$order_amount==704000,]\
+# order_id shop_id user_id order_amount total_items payment_method created_at\
+# 16         16      42     607       704000        2000    credit_card 2017-03-07\
+# 61         61      42     607       704000        2000    credit_card 2017-03-04\
+# 521       521      42     607       704000        2000    credit_card 2017-03-02\
+# 1105     1105      42     607       704000        2000    credit_card 2017-03-24\
+# 1363     1363      42     607       704000        2000    credit_card 2017-03-15\
+# 1437     1437      42     607       704000        2000    credit_card 2017-03-11\
+# 1563     1563      42     607       704000        2000    credit_card 2017-03-19\
+# 1603     1603      42     607       704000        2000    credit_card 2017-03-17\
+# 2154     2154      42     607       704000        2000    credit_card 2017-03-12\
+# 2298     2298      42     607       704000        2000    credit_card 2017-03-07\
+# 2836     2836      42     607       704000        2000    credit_card 2017-03-28\
+# 2970     2970      42     607       704000        2000    credit_card 2017-03-28\
+# 3333     3333      42     607       704000        2000    credit_card 2017-03-24\
+# 4057     4057      42     607       704000        2000    credit_card 2017-03-28\
+# 4647     4647      42     607       704000        2000    credit_card 2017-03-02\
+# 4869     4869      42     607       704000        2000    credit_card 2017-03-22\
+# 4883     4883      42     607       704000        2000    credit_card 2017-03-25\
+\
+#### To avoid this problem, we can calculate the AOV for each shop and choose the median AOV\
+\
+library(dplyr)\
+aovshop<-Shopdata %>% \
+  group_by(shop_id) %>% \
+  summarise(total_revenue = sum(order_amount),\
+            total_orders = sum(total_items))\
+aovshop$AOV_shop=aovshop$total_revenue/aovshop$total_orders\
+median(aovshop$AOV_shop)\
+\
+# [1] 153\
+\
+### So the median of AOV for each shop is $153\
+\
+\
+\
+\
+\
+\
+Question 2 \
+\
+(a)\
+\
+SELECT COUNT(Orders.OrderID) as 'Speedy Count' FROM Orders INNER JOIN Shippers ON Orders.ShipperID=Shippers.ShipperID WHERE Shippers.ShipperName = 'Speedy Express';\
+\
+Result:\
+Number of Records: 1\
+'Speedy Count'\
+54 \
+\
+(b)\
+\
+SELECT TOP 1 Employees.LastName FROM Orders INNER JOIN Employees ON Orders.EmployeeID=Employees.EmployeeID GROUP BY Employees.LastName ORDER BY Count(Orders.OrderID) DESC;\
+\
+Result:\
+Number of Records: 1\
+LastName\
+Peacock \
+\
+(c)\
+\
+SELECT Products.ProductName, SUM(OrderDetails.Quantity) as total_quantity\
+FROM (((Orders \
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID )\
+INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID )\
+INNER JOIN Products ON OrderDetails.ProductID = Products.ProductID) \
+WHERE Customers.Country = 'Germany'\
+GROUP BY Products.ProductName\
+ORDER BY SUM(OrderDetails.Quantity) DESC;\
+\
+Result:\
+Number of Records: 45\
+ProductName	total_quantity\
+Boston Crab Meat 	160 \
+\
+}
