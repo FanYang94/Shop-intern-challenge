@@ -4,3 +4,9 @@
 ## a. Think about what could be going wrong with our calculation. Think about a better way to evaluate this data. 
 ## b. What metric would you report for this dataset?
 ## c. What is its value?
+
+
+## Question 2: For this question you’ll need to use SQL. Follow this link to access the data set required for the challenge. Please use queries to answer the following questions. Paste your queries along with your final numerical answers below.
+## a. How many orders were shipped by Speedy Express in total?
+## b. What is the last name of the employee with the most orders?
+## c. What product was ordered the most by customers in Germany?
